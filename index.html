@@ -165,13 +165,6 @@
 
 <div class="main">
 
-  <!-- API Key -->
-  <div class="card">
-    <div class="card-title"><span class="dot dot-blue"></span>Claude API Key</div>
-    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
-    <p class="note">Your key is saved in this browser only. Get yours at console.anthropic.com</p>
-  </div>
-
   <!-- URL Input -->
   <div class="card">
     <div class="card-title"><span class="dot dot-blue"></span>GetWork Job URL</div>
@@ -240,11 +233,13 @@ const ST = { locs: [], comps: [] };
 window._jd = {};
 
 window.addEventListener('load', () => {
-  const k = localStorage.getItem('bsg_apikey');
-  if (k) document.getElementById('apiKey').value = k;
   addTag('locI','locT','locs','tag-blue');
   addTag('compI','compT','comps','tag-amber');
 });
+
+// ── PASTE YOUR CLAUDE API KEY HERE ──────────────────────────────
+const CLAUDE_API_KEY = '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';
+// ────────────────────────────────────────────────────────────────
 
 function addTag(iid, tid, key, cls) {
   document.getElementById(iid).addEventListener('keydown', e => {
@@ -273,11 +268,9 @@ function fillF(id, val) {
 }
 
 async function doFetch() {
-  const apiKey = document.getElementById('apiKey').value.trim();
+  const apiKey = CLAUDE_API_KEY;
   const url = document.getElementById('jobUrl').value.trim();
-  if (!apiKey) { showSt('fetchSt','Please enter your Claude API key first.','s-err',false); return; }
   if (!url) { showSt('fetchSt','Please enter a GetWork URL.','s-err',false); return; }
-  localStorage.setItem('bsg_apikey', apiKey);
   document.getElementById('fetchBtn').disabled = true;
   showSt('fetchSt','Fetching job description from GetWork...','s-info',true);
 
@@ -356,13 +349,11 @@ async function doFetch() {
 }
 
 async function doGen() {
-  const apiKey = document.getElementById('apiKey').value.trim();
+  const apiKey = CLAUDE_API_KEY;
   const jd = window._jd;
-  if (!apiKey) { showSt('genSt','Please enter your API key.','s-err',false); return; }
   if (!jd.jobTitle && !document.getElementById('coName').value) {
     showSt('genSt','Please fetch a job URL first.','s-err',false); return;
   }
-  localStorage.setItem('bsg_apikey', apiKey);
   document.getElementById('genBtn').disabled = true;
   showSt('genSt','Generating Boolean searches and competitor map...','s-info',true);
 
@@ -386,13 +377,13 @@ Skills: ${(jd.keySkills||[]).join(', ')}
 Experience: ${f.expMin||0}–${f.expMax||'?'} years
 CTC: ${f.ctcMin||0}–${f.ctcMax||'?'} LPA
 Locations: ${f.locs.join(', ')||'Any'}
-Competitors: ${f.comps.join(', ')||'Auto-identify from industry'}
+Additional Competitors specified: ${f.comps.join(', ')||'None'}
 JD: ${jd.jobDescription||'Use skills and title above'}
 
 Return ONLY valid JSON:
-{"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"booleanLevels":[{"level":1,"label":"Very Narrow","description":"Exact skills + experience + location","searches":["B1","B2","B3"]},{"level":2,"label":"Narrow","description":"Core skills with slight flexibility","searches":["B1","B2","B3"]},{"level":3,"label":"Moderate","description":"Primary skills with synonyms","searches":["B1","B2","B3"]},{"level":4,"label":"Medium Broad","description":"Broader skills and related roles","searches":["B1","B2","B3"]},{"level":5,"label":"Broad","description":"Cross-industry similar roles","searches":["B1","B2","B3"]},{"level":6,"label":"Very Broad","description":"Maximum reach, adjacent titles","searches":["B1","B2","B3"]}],"competitorSearches":[{"company":"Name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","rationale":"Why","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
+{"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"booleanLevels":[{"level":1,"label":"Very Narrow","description":"Exact skills + experience + location","searches":["B1","B2","B3"]},{"level":2,"label":"Narrow","description":"Core skills with slight flexibility","searches":["B1","B2","B3"]},{"level":3,"label":"Moderate","description":"Primary skills with synonyms","searches":["B1","B2","B3"]},{"level":4,"label":"Medium Broad","description":"Broader skills and related roles","searches":["B1","B2","B3"]},{"level":5,"label":"Broad","description":"Cross-industry similar roles","searches":["B1","B2","B3"]},{"level":6,"label":"Very Broad","description":"Maximum reach, adjacent titles","searches":["B1","B2","B3"]}],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
 
-Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" OR "6 years"). Competitors: ("Company") AND (skills). ONLY JSON.`;
+Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" OR "6 years"). Competitors: ("Company") AND (skills). Include competitors from SAME industry as hiring company AND from OTHER industries where same role exists. Each competitor must have an industry field. Return 8 competitors minimum. ONLY JSON.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -448,11 +439,37 @@ function drawResults(r,f) {
     ...f.locs.map(l=>`<span class="chip chip-a">${l}</span>`)
   ].filter(Boolean).join('');
   const bTabs=r.booleanLevels.map(l=>`<button class="lvl-tab ${l.level===1?'on':''}" id="lt${l.level}" onclick="swLvl(${l.level},${tot})">L${l.level} · ${l.label}</button>`).join('');
-  const bPan=r.booleanLevels.map(l=>`<div class="lvl-panel ${l.level===1?'on':''}" id="lp${l.level}"><div class="lvl-desc">${l.description}</div>${l.searches.map((s,i)=>`<div class="sv"><div class="sv-hdr"><span class="sv-num">Variation ${i+1}</span><div style="display:flex;gap:6px;align-items:center;"><button class="btn-copy" id="bc${l.level}_${i}" onclick="cp(${JSON.stringify(s)},'bc${l.level}_${i}')">Copy</button><a href="https://www.naukri.com/jobs?k=${encodeURIComponent((s||'').replace(/\b(AND|OR|NOT)\b/g,'').replace(/["()]/g,'').trim().slice(0,60))}" target="_blank" style="font-size:0.7rem;color:var(--accent);font-family:var(--mono);text-decoration:none;padding:2px 6px;border:1px solid #bfdbfe;border-radius:4px;background:#eff6ff;">Naukri ↗</a></div></div><div class="sv-txt">${hl(s)}</div></div>`).join('')}</div>`).join('');
-  const compH=(r.competitorSearches||[]).map((c,ci)=>`<div class="comp-card"><div class="comp-name">${c.company}</div><div class="comp-why">${c.rationale||''}</div>${(c.searches||[]).map((s,si)=>`<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;"><div class="comp-search">${hl(s)}</div><button class="btn-copy" id="cc${ci}_${si}" onclick="cp(${JSON.stringify(s)},'cc${ci}_${si}')" style="flex-shrink:0;margin-top:2px;">Copy</button></div>`).join('')}</div>`).join('');
+
+  const naukriInstructions = `<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:0.9rem 1rem;margin-bottom:1rem;">
+    <div style="font-size:0.78rem;font-weight:700;color:#92400e;margin-bottom:6px;">📋 How to use on Naukri.com</div>
+    <ol style="font-size:0.75rem;color:#78350f;font-family:var(--mono);line-height:2;padding-left:1.2rem;">
+      <li>Go to <strong>naukri.com</strong> → Click the search bar</li>
+      <li>Copy the Boolean string below using the <strong>Copy</strong> button</li>
+      <li>Paste it directly into the <strong>Naukri search box</strong></li>
+      <li>Hit <strong>Enter</strong> or click Search</li>
+      <li>Use <strong>Experience / Location / Salary filters</strong> on the left to refine</li>
+    </ol>
+  </div>`;
+
+  const bPan=r.booleanLevels.map(l=>`<div class="lvl-panel ${l.level===1?'on':''}" id="lp${l.level}"><div class="lvl-desc">${l.description}</div>${l.searches.map((s,i)=>`<div class="sv"><div class="sv-hdr"><span class="sv-num">Variation ${i+1}</span><button class="btn-copy" id="bc${l.level}_${i}" onclick="cp(${JSON.stringify(s)},'bc${l.level}_${i}')">Copy</button></div><div style="font-size:0.72rem;font-weight:700;color:#1e40af;margin-bottom:5px;">📋 Copy and paste this string in Naukri search box:</div><div class="sv-txt">${hl(s)}</div></div>`).join('')}</div>`).join('');
+
+  // Group competitors by industry
+  const compsByIndustry = {};
+  (r.competitorSearches||[]).forEach(c => {
+    const ind = c.industry || 'Other';
+    if (!compsByIndustry[ind]) compsByIndustry[ind] = [];
+    compsByIndustry[ind].push(c);
+  });
+  const compH = Object.entries(compsByIndustry).map(([industry, comps]) => `
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);background:var(--amber-light);border:1px solid #fcd34d;border-radius:4px;padding:3px 10px;display:inline-block;margin-bottom:0.7rem;">${industry}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
+        ${comps.map((c,ci)=>`<div class="comp-card"><div class="comp-name">${c.company}</div><div class="comp-why">${c.rationale||''}</div>${(c.searches||[]).map((s,si)=>`<div style="margin-bottom:5px;"><div style="font-size:0.7rem;font-weight:700;color:#1e40af;margin-bottom:3px;">📋 Copy &amp; paste in Naukri:</div><div style="display:flex;gap:5px;align-items:flex-start;"><div class="comp-search">${hl(s)}</div><button class="btn-copy" id="cc${ci}_${si}" onclick="cp(${JSON.stringify(s)},'cc${ci}_${si}')" style="flex-shrink:0;margin-top:2px;">Copy</button></div></div>`).join('')}</div>`).join('')}
+      </div>
+    </div>`).join('');
   const mm=r.manpowerMapping||{};
   const mmH=`<div style="margin-bottom:1rem;"><div class="card-title">Similar role titles</div><div class="tags">${(r.similarRoles||[]).map(x=>`<span class="tag tag-blue">${x}</span>`).join('')}</div></div><div style="margin-bottom:1rem;"><div class="card-title">Role synonyms</div><div class="tags">${(mm.roleSynonyms||[]).map(x=>`<span class="tag tag-green">${x}</span>`).join('')}</div></div><div style="margin-bottom:1rem;"><div class="card-title">Target industries</div><div class="tags">${(mm.targetIndustries||[]).map(x=>`<span class="tag tag-amber">${x}</span>`).join('')}</div></div><div class="card-title">Cross-industry searches</div>${(mm.crossIndustrySearches||[]).map((s,i)=>`<div class="sv"><div class="sv-hdr"><span class="sv-num">Search ${i+1}</span><button class="btn-copy" id="mc${i}" onclick="cp(${JSON.stringify(s)},'mc${i}')">Copy</button></div><div class="sv-txt">${hl(s)}</div></div>`).join('')}`;
-  document.getElementById('res').innerHTML=`<div class="res-header"><div class="res-title">${r.jobTitle||'Results'}</div><div class="res-chips">${chips}</div><div class="res-skills">Skills: ${(r.extractedSkills||[]).join(' · ')}</div></div><div class="sec-tabs"><button class="sec-tab on" onclick="swSec(0)">Boolean Searches</button><button class="sec-tab" onclick="swSec(1)">Competitor Mapping</button><button class="sec-tab" onclick="swSec(2)">Manpower Mapping</button></div><div class="sec-panel on"><div class="scope-bar"><span class="sc-lbl">NARROW</span><div class="sc-track"><div class="sc-fill" id="scFill" style="width:16%"></div></div><span class="sc-lbl">BROAD</span></div><div class="lvl-tabs">${bTabs}</div>${bPan}</div><div class="sec-panel">${compH}</div><div class="sec-panel">${mmH}</div>`;
+  document.getElementById('res').innerHTML=`<div class="res-header"><div class="res-title">${r.jobTitle||'Results'}</div><div class="res-chips">${chips}</div><div class="res-skills">Skills: ${(r.extractedSkills||[]).join(' · ')}</div></div><div class="sec-tabs"><button class="sec-tab on" onclick="swSec(0)">Boolean Searches</button><button class="sec-tab" onclick="swSec(1)">Competitor Mapping</button><button class="sec-tab" onclick="swSec(2)">Manpower Mapping</button></div><div class="sec-panel on">${naukriInstructions}<div class="scope-bar"><span class="sc-lbl">NARROW</span><div class="sc-track"><div class="sc-fill" id="scFill" style="width:16%"></div></div><span class="sc-lbl">BROAD</span></div><div class="lvl-tabs">${bTabs}</div>${bPan}</div><div class="sec-panel">${compH}</div><div class="sec-panel">${mmH}</div>`;
   const rc=document.getElementById('resCard'); rc.style.display='block';
   rc.scrollIntoView({behavior:'smooth',block:'start'});
 }
