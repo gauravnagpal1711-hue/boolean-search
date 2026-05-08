@@ -372,6 +372,9 @@ async function doGen() {
     comps: [...ST.comps]
   };
 
+  const ctcMinVal = f.ctcMin ? (f.ctcMin > 1000 ? Math.round(f.ctcMin/100000) : f.ctcMin) : 0;
+  const ctcMaxVal = f.ctcMax ? (f.ctcMax > 1000 ? Math.round(f.ctcMax/100000) : f.ctcMax) : 0;
+
   const prompt = `Senior talent acquisition strategist. Generate complete Boolean search strategy for Naukri.com.
 
 Job Title: ${jd.jobTitle}
@@ -379,7 +382,7 @@ Company: ${f.co}
 Industry: ${f.ind}
 Skills: ${(jd.keySkills||[]).join(', ')}
 Experience: ${f.expMin||0}–${f.expMax||'?'} years
-CTC: ${f.ctcMin||0}–${f.ctcMax||'?'} LPA
+CTC: ${ctcMinVal||0}–${ctcMaxVal||'?'} LPA
 Locations: ${f.locs.join(', ')||'Any'}
 Additional Competitors specified: ${f.comps.join(', ')||'None'}
 JD: ${jd.jobDescription||'Use skills and title above'}
@@ -387,7 +390,7 @@ JD: ${jd.jobDescription||'Use skills and title above'}
 Return ONLY valid JSON:
 {"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"booleanLevels":[{"level":1,"label":"Very Narrow","description":"Exact skills + experience + location","searches":["B1","B2","B3"]},{"level":2,"label":"Narrow","description":"Core skills with slight flexibility","searches":["B1","B2","B3"]},{"level":3,"label":"Moderate","description":"Primary skills with synonyms","searches":["B1","B2","B3"]},{"level":4,"label":"Medium Broad","description":"Broader skills and related roles","searches":["B1","B2","B3"]},{"level":5,"label":"Broad","description":"Cross-industry similar roles","searches":["B1","B2","B3"]},{"level":6,"label":"Very Broad","description":"Maximum reach, adjacent titles","searches":["B1","B2","B3"]}],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
 
-Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" OR "6 years"). Competitors: ("Company") AND (skills). Include competitors from SAME industry as hiring company AND from OTHER industries where same role exists. Each competitor must have an industry field. Return 8 competitors minimum. ONLY JSON.`;
+Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" OR "6 years"). Competitors: ("Company") AND (skills). Include competitors from SAME industry AND OTHER industries where same role exists. Each competitor must have industry field. Return 8 competitors minimum. No apostrophes or special characters inside JSON string values. ONLY JSON.`;
 
   try {
     const res = await fetch('/api/claude', {
@@ -397,9 +400,22 @@ Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" 
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error?.message || `API error ${res.status}`);
-    const txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('').replace(/```json\s*/gi,'').replace(/```/g,'');
+    let txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    // Clean markdown fences
+    txt = txt.replace(/```json\s*/gi,'').replace(/```/g,'');
+    // Fix common JSON issues: smart quotes, apostrophes in text
+    txt = txt.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
     const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
-    const result = JSON.parse(txt.slice(s,e+1));
+    if (s < 0 || e <= s) throw new Error('Could not parse response. Please try again.');
+    let result;
+    try {
+      result = JSON.parse(txt.slice(s, e+1));
+    } catch(parseErr) {
+      // Try to fix unescaped apostrophes inside JSON strings
+      const fixed = txt.slice(s, e+1).replace(/([^\\])'/g, "$1\\'");
+      try { result = JSON.parse(fixed); }
+      catch(e2) { throw new Error('JSON parse error. Please try again.'); }
+    }
     showSt('genSt','','','');
     drawResults(result, f);
   } catch(err) {
