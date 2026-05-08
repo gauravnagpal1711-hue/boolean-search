@@ -311,7 +311,7 @@ async function doFetch() {
     // Step 2: Claude extracts structured data
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'x-api-key': apiKey, 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
+      headers: { 'x-api-key': apiKey, 'content-type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5', max_tokens: 1500,
         messages: [{ role: 'user', content: `Extract job details from this page text. Return ONLY valid JSON:\n\n${pageText}\n\n{"jobTitle":"","companyName":"","industry":"","experienceMin":0,"experienceMax":0,"ctcMin":0,"ctcMax":0,"locations":[],"keySkills":[],"jobDescription":"full responsibilities and requirements"}` }]
@@ -397,7 +397,7 @@ Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'x-api-key': apiKey, 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
+      headers: { 'x-api-key': apiKey, 'content-type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
