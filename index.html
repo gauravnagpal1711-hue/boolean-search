@@ -282,13 +282,24 @@ async function doFetch() {
   showSt('fetchSt','Fetching job description from GetWork...','s-info',true);
 
   try {
-    // Step 1: Fetch via allorigins proxy
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const r = await fetch(proxy);
-    if (!r.ok) throw new Error('Could not fetch page');
-    const d = await r.json();
-    const html = d.contents || '';
-    if (html.length < 100) throw new Error('Empty page');
+    // Fetch page using multiple CORS proxies
+    let html = '';
+    const proxyUrls = [
+      `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    ];
+
+    for (const proxyUrl of proxyUrls) {
+      try {
+        const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+        if (!r.ok) continue;
+        const t = await r.text();
+        if (t && t.length > 200) { html = t; break; }
+      } catch(e) { continue; }
+    }
+
+    if (!html || html.length < 200) throw new Error('Could not fetch job page. Please check the URL and try again.');
 
     // Parse HTML
     const doc = new DOMParser().parseFromString(html, 'text/html');
