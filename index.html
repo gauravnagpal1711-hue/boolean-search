@@ -165,6 +165,13 @@
 
 <div class="main">
 
+  <!-- API Key -->
+  <div class="card">
+    <div class="card-title"><span class="dot dot-blue"></span>Claude API Key</div>
+    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
+    <p class="note">Your key is saved in this browser only. Get yours at console.anthropic.com</p>
+  </div>
+
   <!-- URL Input -->
   <div class="card">
     <div class="card-title"><span class="dot dot-blue"></span>GetWork Job URL</div>
@@ -233,13 +240,11 @@ const ST = { locs: [], comps: [] };
 window._jd = {};
 
 window.addEventListener('load', () => {
+  const k = localStorage.getItem('bsg_apikey');
+  if (k) document.getElementById('apiKey').value = k;
   addTag('locI','locT','locs','tag-blue');
   addTag('compI','compT','comps','tag-amber');
 });
-
-// ── PASTE YOUR CLAUDE API KEY HERE ──────────────────────────────
-const CLAUDE_API_KEY = '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';
-// ────────────────────────────────────────────────────────────────
 
 function addTag(iid, tid, key, cls) {
   document.getElementById(iid).addEventListener('keydown', e => {
@@ -268,9 +273,11 @@ function fillF(id, val) {
 }
 
 async function doFetch() {
-  const apiKey = CLAUDE_API_KEY;
+  const apiKey = document.getElementById('apiKey').value.trim();
   const url = document.getElementById('jobUrl').value.trim();
+  if (!apiKey) { showSt('fetchSt','Please enter your Claude API key first.','s-err',false); return; }
   if (!url) { showSt('fetchSt','Please enter a GetWork URL.','s-err',false); return; }
+  localStorage.setItem('bsg_apikey', apiKey);
   document.getElementById('fetchBtn').disabled = true;
   showSt('fetchSt','Fetching job description from GetWork...','s-info',true);
 
@@ -349,11 +356,13 @@ async function doFetch() {
 }
 
 async function doGen() {
-  const apiKey = CLAUDE_API_KEY;
+  const apiKey = document.getElementById('apiKey').value.trim();
   const jd = window._jd;
+  if (!apiKey) { showSt('genSt','Please enter your API key.','s-err',false); return; }
   if (!jd.jobTitle && !document.getElementById('coName').value) {
     showSt('genSt','Please fetch a job URL first.','s-err',false); return;
   }
+  localStorage.setItem('bsg_apikey', apiKey);
   document.getElementById('genBtn').disabled = true;
   showSt('genSt','Generating Boolean searches and competitor map...','s-info',true);
 
