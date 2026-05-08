@@ -242,7 +242,7 @@ window.addEventListener('load', () => {
 /* =============================================================
    PASTE YOUR CLAUDE API KEY BELOW (replace the text inside '')
    ============================================================= */
-const CLAUDE_API_KEY = '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';
+
 /* ============================================================= */
 
 function addTag(iid, tid, key, cls) {
@@ -272,7 +272,7 @@ function fillF(id, val) {
 }
 
 async function doFetch() {
-  const apiKey = CLAUDE_API_KEY;
+  // key handled server-side
   const url = document.getElementById('jobUrl').value.trim();
   if (!url) { showSt('fetchSt','Please enter a GetWork URL.','s-err',false); return; }
   document.getElementById('fetchBtn').disabled = true;
@@ -306,9 +306,9 @@ async function doFetch() {
     showSt('fetchSt','Page fetched. Extracting job details with Claude...','s-info',true);
 
     // Step 2: Claude extracts structured data
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/claude', {
       method: 'POST',
-      headers: { 'x-api-key': apiKey, 'content-type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5', max_tokens: 1500,
         messages: [{ role: 'user', content: `Extract job details from this page text. Return ONLY valid JSON:\n\n${pageText}\n\n{"jobTitle":"","companyName":"","industry":"","experienceMin":0,"experienceMax":0,"ctcMin":0,"ctcMax":0,"locations":[],"keySkills":[],"jobDescription":"full responsibilities and requirements"}` }]
@@ -353,7 +353,7 @@ async function doFetch() {
 }
 
 async function doGen() {
-  const apiKey = CLAUDE_API_KEY;
+  // key handled server-side
   const jd = window._jd;
   if (!jd.jobTitle && !document.getElementById('coName').value) {
     showSt('genSt','Please fetch a job URL first.','s-err',false); return;
@@ -390,9 +390,9 @@ Return ONLY valid JSON:
 Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" OR "6 years"). Competitors: ("Company") AND (skills). Include competitors from SAME industry as hiring company AND from OTHER industries where same role exists. Each competitor must have an industry field. Return 8 competitors minimum. ONLY JSON.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/claude', {
       method: 'POST',
-      headers: { 'x-api-key': apiKey, 'content-type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
