@@ -216,11 +216,11 @@ window._filters = {};
 
 /* Level definitions — 5 levels */
 const LEVEL_META = [
-  { level:1, label:'Very Narrow',  description:'Exact title + exact skills + experience band + location' },
-  { level:2, label:'Narrow',       description:'Core skills + slight location flexibility, synonyms allowed' },
+  { level:1, label:'Very Broad',   description:'Maximum reach — cross-industry, alternate titles, transferable skills' },
+  { level:2, label:'Broad',        description:'Wider skills, cross-functional and adjacent roles' },
   { level:3, label:'Moderate',     description:'Primary skills with synonyms, related job titles included' },
-  { level:4, label:'Broad',        description:'Wider skills, cross-functional and adjacent roles' },
-  { level:5, label:'Very Broad',   description:'Maximum reach — cross-industry, alternate titles, transferable skills' }
+  { level:4, label:'Narrow',       description:'Core skills + slight location flexibility, synonyms allowed' },
+  { level:5, label:'Very Narrow',  description:'Exact title + exact skills + experience band + location' }
 ];
 
 /* Cache: level number → array of boolean strings (set after first fetch) */
@@ -429,8 +429,8 @@ Industry: ${f.ind||''}
 Rules:
 - AND OR NOT must be uppercase
 - Use quotes around multi-word phrases: "machine learning"
-- L1 and L2: include experience years explicitly, e.g. AND ("3 years" OR "4 years" OR "5 years")
-- L4 and L5: use broader synonyms, drop strict location, include adjacent titles
+- L4 and L5: include experience years explicitly, e.g. AND ("3 years" OR "4 years" OR "5 years")
+- L1 and L2: use broader synonyms, drop strict location, include adjacent titles
 - Each variation must be meaningfully different from the others
 - Return ONLY valid JSON, no markdown, no explanation
 
@@ -593,9 +593,9 @@ function drawResults(r, f) {
     </div>
     <div class="sec-panel on">
       <div class="scope-bar">
-        <span class="sc-lbl">NARROW</span>
-        <div class="sc-track"><div class="sc-fill" id="scFill" style="width:20%"></div></div>
         <span class="sc-lbl">BROAD</span>
+        <div class="sc-track"><div class="sc-fill" id="scFill" style="width:20%"></div></div>
+        <span class="sc-lbl">NARROW</span>
       </div>
       <div class="lvl-tabs">${bTabs}</div>
       ${bPanels}
