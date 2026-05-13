@@ -30,16 +30,13 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
 
-  /* Header */
   .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
   .header-logo { font-size: 1rem; font-weight: 700; color: var(--text); }
   .header-logo span { color: var(--accent); }
   .header-badge { font-size: 0.7rem; background: var(--accent-light); color: var(--accent); border: 1px solid #bfdbfe; border-radius: 100px; padding: 0.2rem 0.6rem; font-weight: 600; }
 
-  /* Main */
   .main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
 
-  /* Card */
   .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
   .card-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
   .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
@@ -48,7 +45,6 @@
   .dot-green { background: var(--accent2); }
   .dot-amber { background: var(--amber); }
 
-  /* Inputs */
   input[type="text"], input[type="password"], input[type="number"], textarea {
     width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
     color: var(--text); font-family: var(--mono); font-size: 0.82rem; padding: 0.7rem 0.9rem;
@@ -67,7 +63,6 @@
   .range-row input { flex: 1; }
   .range-sep { font-size: 0.8rem; color: var(--text3); flex-shrink: 0; }
 
-  /* Buttons */
   .btn { border: none; border-radius: var(--radius-sm); font-family: var(--font); font-weight: 600; cursor: pointer; transition: all 0.15s; }
   .btn-primary { background: var(--accent); color: #fff; font-size: 0.9rem; padding: 0.75rem 1.5rem; width: 100%; margin-top: 0.5rem; }
   .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
@@ -79,14 +74,12 @@
   .btn-copy:hover { background: var(--accent-light); color: var(--accent); border-color: #93c5fd; }
   .btn-copy.copied { background: var(--accent2-light); color: var(--accent2); border-color: #86efac; }
 
-  /* Status */
   .status { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.75rem; padding: 0.6rem 0.9rem; border-radius: var(--radius-sm); margin-top: 0.7rem; }
   .s-info { background: var(--accent-light); border: 1px solid #bfdbfe; color: #1e40af; }
   .s-err { background: var(--red-light); border: 1px solid #fca5a5; color: var(--red); }
   .s-ok { background: var(--accent2-light); border: 1px solid #86efac; color: #15803d; }
   .spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
 
-  /* Tags */
   .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; min-height: 20px; }
   .tag { display: inline-flex; align-items: center; gap: 3px; font-size: 0.7rem; font-family: var(--mono); padding: 2px 7px; border-radius: 4px; }
   .tag-blue { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
@@ -95,7 +88,6 @@
   .tag-x { cursor: pointer; opacity: 0.4; font-size: 10px; margin-left: 1px; }
   .tag-x:hover { opacity: 1; }
 
-  /* Extracted box */
   .extracted { background: var(--accent2-light); border: 1px solid #86efac; border-radius: var(--radius-sm); padding: 0.8rem 1rem; margin-top: 0.8rem; }
   .ext-job { font-size: 1rem; font-weight: 600; color: #14532d; margin-bottom: 6px; }
   .ext-chips { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -104,7 +96,6 @@
   .chip-g { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
   .chip-a { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
 
-  /* Section tabs */
   .sec-tabs { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1.2rem; }
   .sec-tab { flex: 1; background: transparent; border: none; color: var(--text2); font-family: var(--font); font-size: 0.8rem; font-weight: 500; padding: 0.6rem 0.5rem; cursor: pointer; transition: all 0.15s; border-right: 1px solid var(--border); text-align: center; }
   .sec-tab:last-child { border-right: none; }
@@ -112,7 +103,6 @@
   .sec-panel { display: none; }
   .sec-panel.on { display: block; }
 
-  /* Level tabs */
   .lvl-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 0.9rem; }
   .lvl-tab { background: var(--white); border: 1px solid var(--border); color: var(--text2); border-radius: var(--radius-sm); font-family: var(--font); font-size: 0.72rem; font-weight: 500; padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
   .lvl-tab:hover { border-color: var(--accent); color: var(--text); }
@@ -120,7 +110,6 @@
   .lvl-panel { display: none; }
   .lvl-panel.on { display: block; animation: fadeUp 0.2s ease; }
 
-  /* Search variant */
   .sv { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 0.6rem; transition: border-color 0.15s; }
   .sv:hover { border-color: var(--border2); }
   .sv-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -129,22 +118,18 @@
   .op { color: var(--accent); font-weight: 700; }
   .qt { color: var(--accent2); }
 
-  /* Scope bar */
   .scope-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.2rem; padding: 0.6rem 0.9rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); }
   .sc-lbl { font-size: 0.68rem; color: var(--text3); font-family: var(--mono); white-space: nowrap; }
   .sc-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
   .sc-fill { height: 100%; background: linear-gradient(to right, var(--accent), #06b6d4); border-radius: 2px; transition: width 0.35s ease; }
 
-  /* Competitor card */
   .comp-card { background: var(--bg); border: 1px solid #fcd34d; border-radius: var(--radius-sm); padding: 0.9rem 1rem; margin-bottom: 0.65rem; }
   .comp-name { font-size: 0.88rem; font-weight: 600; color: #92400e; margin-bottom: 2px; }
   .comp-why { font-size: 0.72rem; color: var(--text3); font-family: var(--mono); margin-bottom: 7px; }
   .comp-search { font-family: var(--mono); font-size: 0.75rem; line-height: 1.6; color: var(--text); background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 6px 10px; flex: 1; }
 
-  /* Level desc */
   .lvl-desc { font-size: 0.75rem; color: var(--text2); font-family: var(--mono); margin-bottom: 0.8rem; padding: 6px 10px; background: var(--bg); border-radius: 4px; border-left: 3px solid var(--accent); }
 
-  /* Result header */
   .res-header { margin-bottom: 1rem; }
   .res-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .res-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
@@ -165,7 +150,6 @@
 
 <div class="main">
 
-  <!-- URL Input -->
   <div class="card">
     <div class="card-title"><span class="dot dot-blue"></span>GetWork Job URL</div>
     <div class="input-row">
@@ -177,7 +161,6 @@
     <div id="extBox" style="display:none;"></div>
   </div>
 
-  <!-- Filters -->
   <div class="grid-3">
     <div class="card">
       <div class="card-title"><span class="dot dot-green"></span>Experience (yrs)</div>
@@ -215,13 +198,11 @@
     </div>
   </div>
 
-  <!-- Generate -->
   <div class="card">
     <button class="btn btn-primary" id="genBtn" onclick="doGen()">⚡ Generate Boolean Searches + Competitor Map</button>
     <div id="genSt"></div>
   </div>
 
-  <!-- Results -->
   <div id="resCard" style="display:none;" class="card">
     <div id="res"></div>
   </div>
@@ -231,19 +212,24 @@
 <script>
 const ST = { locs: [], comps: [] };
 window._jd = {};
+window._filters = {};
+
+/* Level definitions — 5 levels */
+const LEVEL_META = [
+  { level:1, label:'Very Narrow',  description:'Exact title + exact skills + experience band + location' },
+  { level:2, label:'Narrow',       description:'Core skills + slight location flexibility, synonyms allowed' },
+  { level:3, label:'Moderate',     description:'Primary skills with synonyms, related job titles included' },
+  { level:4, label:'Broad',        description:'Wider skills, cross-functional and adjacent roles' },
+  { level:5, label:'Very Broad',   description:'Maximum reach — cross-industry, alternate titles, transferable skills' }
+];
+
+/* Cache: level number → array of boolean strings (set after first fetch) */
+const LEVEL_CACHE = {};
 
 window.addEventListener('load', () => {
-  const k = localStorage.getItem('bsg_apikey');
-  if (k) document.getElementById('apiKey').value = k;
   addTag('locI','locT','locs','tag-blue');
   addTag('compI','compT','comps','tag-amber');
 });
-
-/* =============================================================
-   PASTE YOUR CLAUDE API KEY BELOW (replace the text inside '')
-   ============================================================= */
-
-/* ============================================================= */
 
 function addTag(iid, tid, key, cls) {
   document.getElementById(iid).addEventListener('keydown', e => {
@@ -271,41 +257,30 @@ function fillF(id, val) {
   el.value = val; el.classList.add('good');
 }
 
+/* ── FETCH JD ──────────────────────────────────────────────── */
 async function doFetch() {
-  // key handled server-side
   const url = document.getElementById('jobUrl').value.trim();
   if (!url) { showSt('fetchSt','Please enter a GetWork URL.','s-err',false); return; }
   document.getElementById('fetchBtn').disabled = true;
-  showSt('fetchSt','Fetching job description from GetWork...','s-info',true);
 
   try {
-    // Fetch page - codetabs is most reliable free proxy
-    let html = '';
-    const proxyUrls = [
-      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(url)}`
-    ];
+    showSt('fetchSt','Fetching job page...','s-info',true);
+    const fetchRes = await fetch('/api/fetch-jd', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const fetchData = await fetchRes.json();
+    if (!fetchRes.ok || fetchData.error) throw new Error(fetchData.error || 'Could not fetch job page.');
+    const html = fetchData.html;
+    if (!html || html.length < 200) throw new Error('Job page returned empty content. Please check the URL.');
 
-    for (const proxyUrl of proxyUrls) {
-      try {
-        const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
-        if (!r.ok) continue;
-        const t = await r.text();
-        if (t && t.length > 200) { html = t; break; }
-      } catch(e) { continue; }
-    }
-
-    if (!html || html.length < 200) throw new Error('Could not fetch job page. Please check the URL and try again.');
-
-    // Parse HTML
     const doc = new DOMParser().parseFromString(html, 'text/html');
     doc.querySelectorAll('script,style,nav,footer,header').forEach(e => e.remove());
     const pageText = (doc.body?.innerText || '').replace(/\s+/g,' ').trim().slice(0,5000);
 
     showSt('fetchSt','Page fetched. Extracting job details with Claude...','s-info',true);
 
-    // Step 2: Claude extracts structured data
     const res = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -321,7 +296,6 @@ async function doFetch() {
     const j = JSON.parse(txt.slice(s, e+1));
     window._jd = j;
 
-    // Auto-fill
     fillF('coName', j.companyName);
     fillF('indName', j.industry);
     if (j.experienceMin) fillF('expMin', j.experienceMin);
@@ -352,14 +326,18 @@ async function doFetch() {
   }
 }
 
+/* ── GENERATE — metadata + competitors only (no booleans yet) ── */
 async function doGen() {
-  // key handled server-side
   const jd = window._jd;
   if (!jd.jobTitle && !document.getElementById('coName').value) {
     showSt('genSt','Please fetch a job URL first.','s-err',false); return;
   }
+
+  /* Clear level cache on every new Generate */
+  Object.keys(LEVEL_CACHE).forEach(k => delete LEVEL_CACHE[k]);
+
   document.getElementById('genBtn').disabled = true;
-  showSt('genSt','Generating Boolean searches and competitor map...','s-info',true);
+  showSt('genSt','Generating competitor map and job metadata...','s-info',true);
 
   const f = {
     expMin: document.getElementById('expMin').value || jd.experienceMin,
@@ -371,11 +349,12 @@ async function doGen() {
     locs: ST.locs.length ? ST.locs : (jd.locations||[]),
     comps: [...ST.comps]
   };
+  window._filters = f;
 
   const ctcMinVal = f.ctcMin ? (f.ctcMin > 1000 ? Math.round(f.ctcMin/100000) : f.ctcMin) : 0;
   const ctcMaxVal = f.ctcMax ? (f.ctcMax > 1000 ? Math.round(f.ctcMax/100000) : f.ctcMax) : 0;
 
-  const prompt = `Senior talent acquisition strategist. Generate complete Boolean search strategy for Naukri.com.
+  const prompt = `Senior talent acquisition strategist. Extract structured job data for Naukri sourcing strategy.
 
 Job Title: ${jd.jobTitle}
 Company: ${f.co}
@@ -384,34 +363,30 @@ Skills: ${(jd.keySkills||[]).join(', ')}
 Experience: ${f.expMin||0}–${f.expMax||'?'} years
 CTC: ${ctcMinVal||0}–${ctcMaxVal||'?'} LPA
 Locations: ${f.locs.join(', ')||'Any'}
-Additional Competitors specified: ${f.comps.join(', ')||'None'}
+Additional Competitors: ${f.comps.join(', ')||'None'}
 JD: ${jd.jobDescription||'Use skills and title above'}
 
-Return ONLY valid JSON:
-{"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"booleanLevels":[{"level":1,"label":"Very Narrow","description":"Exact skills + experience + location","searches":["B1","B2","B3"]},{"level":2,"label":"Narrow","description":"Core skills with slight flexibility","searches":["B1","B2","B3"]},{"level":3,"label":"Moderate","description":"Primary skills with synonyms","searches":["B1","B2","B3"]},{"level":4,"label":"Medium Broad","description":"Broader skills and related roles","searches":["B1","B2","B3"]},{"level":5,"label":"Broad","description":"Cross-industry similar roles","searches":["B1","B2","B3"]},{"level":6,"label":"Very Broad","description":"Maximum reach, adjacent titles","searches":["B1","B2","B3"]}],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
+Return ONLY valid JSON — no boolean search strings needed here:
+{"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
 
-Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" OR "6 years"). Competitors: ("Company") AND (skills). Include competitors from SAME industry AND OTHER industries where same role exists. Each competitor must have industry field. Return 8 competitors minimum. No apostrophes or special characters inside JSON string values. ONLY JSON.`;
+Rules: AND OR NOT uppercase in boolean strings. Competitor searches: ("Company") AND (skills). Include 8 competitors minimum — mix same industry and adjacent industries. No apostrophes in JSON string values. ONLY JSON.`;
 
   try {
     const res = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2500, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error?.message || `API error ${res.status}`);
     let txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
-    // Clean markdown fences
     txt = txt.replace(/```json\s*/gi,'').replace(/```/g,'');
-    // Fix common JSON issues: smart quotes, apostrophes in text
     txt = txt.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
     const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
     if (s < 0 || e <= s) throw new Error('Could not parse response. Please try again.');
     let result;
-    try {
-      result = JSON.parse(txt.slice(s, e+1));
-    } catch(parseErr) {
-      // Try to fix unescaped apostrophes inside JSON strings
+    try { result = JSON.parse(txt.slice(s, e+1)); }
+    catch(parseErr) {
       const fixed = txt.slice(s, e+1).replace(/([^\\])'/g, "$1\\'");
       try { result = JSON.parse(fixed); }
       catch(e2) { throw new Error('JSON parse error. Please try again.'); }
@@ -425,73 +400,215 @@ Rules: AND OR NOT uppercase. Include exp in narrow: AND ("4 years" OR "5 years" 
   }
 }
 
+/* ── FETCH BOOLEAN STRINGS FOR A SINGLE LEVEL (on-demand) ── */
+async function fetchLevel(n) {
+  if (LEVEL_CACHE[n]) return; /* already fetched, skip */
+  const jd = window._jd;
+  const f = window._filters;
+  const meta = LEVEL_META[n-1];
+
+  const panel = document.getElementById(`lp${n}`);
+  if (!panel) return;
+  panel.innerHTML = `<div class="status s-info"><div class="spinner"></div><span>Generating ${meta.label} Boolean strings...</span></div>`;
+
+  const ctcMinVal = f.ctcMin ? (f.ctcMin > 1000 ? Math.round(f.ctcMin/100000) : f.ctcMin) : 0;
+  const ctcMaxVal = f.ctcMax ? (f.ctcMax > 1000 ? Math.round(f.ctcMax/100000) : f.ctcMax) : 0;
+
+  const prompt = `Generate exactly 3 Boolean search string variations for Naukri.com.
+
+Level: ${meta.label}
+Scope: ${meta.description}
+Job Title: ${jd.jobTitle}
+Skills: ${(jd.keySkills||[]).join(', ')}
+Experience: ${f.expMin||0}–${f.expMax||'?'} years
+CTC: ${ctcMinVal||0}–${ctcMaxVal||'?'} LPA
+Locations: ${(f.locs||[]).join(', ')||'Any'}
+Company: ${f.co||''}
+Industry: ${f.ind||''}
+
+Rules:
+- AND OR NOT must be uppercase
+- Use quotes around multi-word phrases: "machine learning"
+- L1 and L2: include experience years explicitly, e.g. AND ("3 years" OR "4 years" OR "5 years")
+- L4 and L5: use broader synonyms, drop strict location, include adjacent titles
+- Each variation must be meaningfully different from the others
+- Return ONLY valid JSON, no markdown, no explanation
+
+{"searches":["full boolean string variation 1","full boolean string variation 2","full boolean string variation 3"]}`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error?.message || `API error ${res.status}`);
+    let txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    txt = txt.replace(/```json\s*/gi,'').replace(/```/g,'');
+    const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+    if (s < 0 || e <= s) throw new Error('Invalid response format.');
+    const result = JSON.parse(txt.slice(s, e+1));
+    LEVEL_CACHE[n] = result.searches;
+    renderLevelPanel(n, result.searches, meta.description);
+  } catch(err) {
+    if (panel) panel.innerHTML =
+      `<div class="status s-err"><span>${err.message} — Click the tab again to retry.</span></div>`;
+    delete LEVEL_CACHE[n]; /* allow retry */
+  }
+}
+
+/* ── RENDER A LEVEL PANEL AFTER FETCH ── */
+function renderLevelPanel(n, searches, description) {
+  const panel = document.getElementById(`lp${n}`);
+  if (!panel) return;
+  const naukriNote = `<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:0.6rem 0.9rem;margin-bottom:0.8rem;">
+    <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px;">How to use on Naukri.com</div>
+    <div style="font-size:0.72rem;color:#78350f;font-family:var(--mono);line-height:1.8;">
+      1. Copy string below &nbsp;→&nbsp; 2. Paste into Naukri search box &nbsp;→&nbsp; 3. Apply Experience / Location / Salary filters on the left panel
+    </div>
+  </div>`;
+  panel.innerHTML = `<div class="lvl-desc">${description}</div>${naukriNote}` +
+    (searches||[]).map((s,i) => `<div class="sv">
+      <div class="sv-hdr">
+        <span class="sv-num">Variation ${i+1}</span>
+        <button class="btn-copy" id="bc${n}_${i}" onclick="cp(${JSON.stringify(s)},'bc${n}_${i}')">Copy</button>
+      </div>
+      <div class="sv-txt">${hl(s)}</div>
+    </div>`).join('');
+}
+
+/* ── SWITCH LEVEL TAB ── */
+function swLvl(n) {
+  const tot = 5;
+  for(let i=1;i<=tot;i++){
+    document.getElementById(`lt${i}`)?.classList.toggle('on', i===n);
+    document.getElementById(`lp${i}`)?.classList.toggle('on', i===n);
+  }
+  const fill = document.getElementById('scFill');
+  if(fill) fill.style.width = Math.round((n/tot)*100)+'%';
+  if(!LEVEL_CACHE[n]) fetchLevel(n); /* fetch only on first click */
+}
+
+/* ── SWITCH SECTION TAB ── */
+function swSec(n) {
+  document.querySelectorAll('.sec-tab').forEach((t,i) => t.classList.toggle('on', i===n));
+  document.querySelectorAll('.sec-panel').forEach((p,i) => p.classList.toggle('on', i===n));
+}
+
+/* ── HELPERS ── */
 function hl(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\b(AND|OR|NOT)\b/g,'<span class="op">$1</span>')
     .replace(/"([^"]+)"/g,'<span class="qt">"$1"</span>');
 }
 function cp(txt, id) {
-  navigator.clipboard.writeText(txt).then(()=>{
-    const b=document.getElementById(id); if(!b) return;
+  navigator.clipboard.writeText(txt).then(() => {
+    const b = document.getElementById(id); if(!b) return;
     b.textContent='Copied!'; b.classList.add('copied');
-    setTimeout(()=>{b.textContent='Copy';b.classList.remove('copied');},2000);
+    setTimeout(() => { b.textContent='Copy'; b.classList.remove('copied'); }, 2000);
   });
 }
-function swSec(n) {
-  document.querySelectorAll('.sec-tab').forEach((t,i)=>t.classList.toggle('on',i===n));
-  document.querySelectorAll('.sec-panel').forEach((p,i)=>p.classList.toggle('on',i===n));
-}
-function swLvl(n,tot) {
-  for(let i=1;i<=tot;i++){
-    document.getElementById(`lt${i}`)?.classList.toggle('on',i===n);
-    document.getElementById(`lp${i}`)?.classList.toggle('on',i===n);
-  }
-  const f=document.getElementById('scFill'); if(f) f.style.width=Math.round((n/tot)*100)+'%';
-}
-function drawResults(r,f) {
-  const tot=r.booleanLevels?.length||6;
-  const chips=[
+
+/* ── DRAW RESULTS SHELL ── */
+function drawResults(r, f) {
+  window._filters = f;
+
+  const chips = [
     r.jobTitle?`<span class="chip chip-b">${r.jobTitle}</span>`:'',
     f.co?`<span class="chip chip-a">${f.co}</span>`:'',
     f.ind?`<span class="chip chip-g">${f.ind}</span>`:'',
     (f.expMin||f.expMax)?`<span class="chip chip-b">Exp: ${f.expMin||0}–${f.expMax||'?'} yrs</span>`:'',
     (f.ctcMin||f.ctcMax)?`<span class="chip chip-g">CTC: ₹${f.ctcMin||0}–${f.ctcMax||'?'} LPA</span>`:'',
-    ...f.locs.map(l=>`<span class="chip chip-a">${l}</span>`)
+    ...(f.locs||[]).map(l=>`<span class="chip chip-a">${l}</span>`)
   ].filter(Boolean).join('');
-  const bTabs=r.booleanLevels.map(l=>`<button class="lvl-tab ${l.level===1?'on':''}" id="lt${l.level}" onclick="swLvl(${l.level},${tot})">L${l.level} · ${l.label}</button>`).join('');
 
-  const naukriInstructions = `<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:0.9rem 1rem;margin-bottom:1rem;">
-    <div style="font-size:0.78rem;font-weight:700;color:#92400e;margin-bottom:6px;">📋 How to use on Naukri.com</div>
-    <ol style="font-size:0.75rem;color:#78350f;font-family:var(--mono);line-height:2;padding-left:1.2rem;">
-      <li>Go to <strong>naukri.com</strong> → Click the search bar</li>
-      <li>Copy the Boolean string below using the <strong>Copy</strong> button</li>
-      <li>Paste it directly into the <strong>Naukri search box</strong></li>
-      <li>Hit <strong>Enter</strong> or click Search</li>
-      <li>Use <strong>Experience / Location / Salary filters</strong> on the left to refine</li>
-    </ol>
-  </div>`;
+  const bTabs = LEVEL_META.map(l =>
+    `<button class="lvl-tab ${l.level===1?'on':''}" id="lt${l.level}" onclick="swLvl(${l.level})">L${l.level} · ${l.label}</button>`
+  ).join('');
 
-  const bPan=r.booleanLevels.map(l=>`<div class="lvl-panel ${l.level===1?'on':''}" id="lp${l.level}"><div class="lvl-desc">${l.description}</div>${l.searches.map((s,i)=>`<div class="sv"><div class="sv-hdr"><span class="sv-num">Variation ${i+1}</span><button class="btn-copy" id="bc${l.level}_${i}" onclick="cp(${JSON.stringify(s)},'bc${l.level}_${i}')">Copy</button></div><div style="font-size:0.72rem;font-weight:700;color:#1e40af;margin-bottom:5px;">📋 Copy and paste this string in Naukri search box:</div><div class="sv-txt">${hl(s)}</div></div>`).join('')}</div>`).join('');
+  /* All 5 panels — content is empty initially, filled by fetchLevel() */
+  const bPanels = LEVEL_META.map(l =>
+    `<div class="lvl-panel ${l.level===1?'on':''}" id="lp${l.level}"></div>`
+  ).join('');
 
-  // Group competitors by industry
+  /* Competitor section */
   const compsByIndustry = {};
   (r.competitorSearches||[]).forEach(c => {
     const ind = c.industry || 'Other';
-    if (!compsByIndustry[ind]) compsByIndustry[ind] = [];
+    if(!compsByIndustry[ind]) compsByIndustry[ind] = [];
     compsByIndustry[ind].push(c);
   });
   const compH = Object.entries(compsByIndustry).map(([industry, comps]) => `
     <div style="margin-bottom:1.2rem;">
       <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);background:var(--amber-light);border:1px solid #fcd34d;border-radius:4px;padding:3px 10px;display:inline-block;margin-bottom:0.7rem;">${industry}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
-        ${comps.map((c,ci)=>`<div class="comp-card"><div class="comp-name">${c.company}</div><div class="comp-why">${c.rationale||''}</div>${(c.searches||[]).map((s,si)=>`<div style="margin-bottom:5px;"><div style="font-size:0.7rem;font-weight:700;color:#1e40af;margin-bottom:3px;">📋 Copy &amp; paste in Naukri:</div><div style="display:flex;gap:5px;align-items:flex-start;"><div class="comp-search">${hl(s)}</div><button class="btn-copy" id="cc${ci}_${si}" onclick="cp(${JSON.stringify(s)},'cc${ci}_${si}')" style="flex-shrink:0;margin-top:2px;">Copy</button></div></div>`).join('')}</div>`).join('')}
+        ${comps.map((c,ci) => `<div class="comp-card">
+          <div class="comp-name">${c.company}</div>
+          <div class="comp-why">${c.rationale||''}</div>
+          ${(c.searches||[]).map((s,si) => `<div style="margin-bottom:5px;">
+            <div style="display:flex;gap:5px;align-items:flex-start;">
+              <div class="comp-search">${hl(s)}</div>
+              <button class="btn-copy" id="cc${ci}_${si}" onclick="cp(${JSON.stringify(s)},'cc${ci}_${si}')" style="flex-shrink:0;margin-top:2px;">Copy</button>
+            </div>
+          </div>`).join('')}
+        </div>`).join('')}
       </div>
     </div>`).join('');
-  const mm=r.manpowerMapping||{};
-  const mmH=`<div style="margin-bottom:1rem;"><div class="card-title">Similar role titles</div><div class="tags">${(r.similarRoles||[]).map(x=>`<span class="tag tag-blue">${x}</span>`).join('')}</div></div><div style="margin-bottom:1rem;"><div class="card-title">Role synonyms</div><div class="tags">${(mm.roleSynonyms||[]).map(x=>`<span class="tag tag-green">${x}</span>`).join('')}</div></div><div style="margin-bottom:1rem;"><div class="card-title">Target industries</div><div class="tags">${(mm.targetIndustries||[]).map(x=>`<span class="tag tag-amber">${x}</span>`).join('')}</div></div><div class="card-title">Cross-industry searches</div>${(mm.crossIndustrySearches||[]).map((s,i)=>`<div class="sv"><div class="sv-hdr"><span class="sv-num">Search ${i+1}</span><button class="btn-copy" id="mc${i}" onclick="cp(${JSON.stringify(s)},'mc${i}')">Copy</button></div><div class="sv-txt">${hl(s)}</div></div>`).join('')}`;
-  document.getElementById('res').innerHTML=`<div class="res-header"><div class="res-title">${r.jobTitle||'Results'}</div><div class="res-chips">${chips}</div><div class="res-skills">Skills: ${(r.extractedSkills||[]).join(' · ')}</div></div><div class="sec-tabs"><button class="sec-tab on" onclick="swSec(0)">Boolean Searches</button><button class="sec-tab" onclick="swSec(1)">Competitor Mapping</button><button class="sec-tab" onclick="swSec(2)">Manpower Mapping</button></div><div class="sec-panel on">${naukriInstructions}<div class="scope-bar"><span class="sc-lbl">NARROW</span><div class="sc-track"><div class="sc-fill" id="scFill" style="width:16%"></div></div><span class="sc-lbl">BROAD</span></div><div class="lvl-tabs">${bTabs}</div>${bPan}</div><div class="sec-panel">${compH}</div><div class="sec-panel">${mmH}</div>`;
-  const rc=document.getElementById('resCard'); rc.style.display='block';
-  rc.scrollIntoView({behavior:'smooth',block:'start'});
+
+  /* Manpower mapping section */
+  const mm = r.manpowerMapping||{};
+  const mmH = `
+    <div style="margin-bottom:1rem;">
+      <div class="card-title">Similar role titles</div>
+      <div class="tags">${(r.similarRoles||[]).map(x=>`<span class="tag tag-blue">${x}</span>`).join('')}</div>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <div class="card-title">Role synonyms</div>
+      <div class="tags">${(mm.roleSynonyms||[]).map(x=>`<span class="tag tag-green">${x}</span>`).join('')}</div>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <div class="card-title">Target industries</div>
+      <div class="tags">${(mm.targetIndustries||[]).map(x=>`<span class="tag tag-amber">${x}</span>`).join('')}</div>
+    </div>
+    <div class="card-title">Cross-industry searches</div>
+    ${(mm.crossIndustrySearches||[]).map((s,i) => `<div class="sv">
+      <div class="sv-hdr">
+        <span class="sv-num">Search ${i+1}</span>
+        <button class="btn-copy" id="mc${i}" onclick="cp(${JSON.stringify(s)},'mc${i}')">Copy</button>
+      </div>
+      <div class="sv-txt">${hl(s)}</div>
+    </div>`).join('')}`;
+
+  document.getElementById('res').innerHTML = `
+    <div class="res-header">
+      <div class="res-title">${r.jobTitle||'Results'}</div>
+      <div class="res-chips">${chips}</div>
+      <div class="res-skills">Skills: ${(r.extractedSkills||[]).join(' · ')}</div>
+    </div>
+    <div class="sec-tabs">
+      <button class="sec-tab on" onclick="swSec(0)">Boolean Searches</button>
+      <button class="sec-tab" onclick="swSec(1)">Competitor Mapping</button>
+      <button class="sec-tab" onclick="swSec(2)">Manpower Mapping</button>
+    </div>
+    <div class="sec-panel on">
+      <div class="scope-bar">
+        <span class="sc-lbl">NARROW</span>
+        <div class="sc-track"><div class="sc-fill" id="scFill" style="width:20%"></div></div>
+        <span class="sc-lbl">BROAD</span>
+      </div>
+      <div class="lvl-tabs">${bTabs}</div>
+      ${bPanels}
+    </div>
+    <div class="sec-panel">${compH}</div>
+    <div class="sec-panel">${mmH}</div>`;
+
+  const rc = document.getElementById('resCard');
+  rc.style.display = 'block';
+  rc.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  /* Auto-fetch L1 since it is the default visible tab */
+  fetchLevel(1);
 }
 </script>
 </body>
