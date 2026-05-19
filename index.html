@@ -45,7 +45,7 @@
   .dot-green { background: var(--accent2); }
   .dot-amber { background: var(--amber); }
 
-  input[type="text"], input[type="password"], input[type="number"], textarea {
+  input[type="text"], input[type="number"], textarea {
     width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
     color: var(--text); font-family: var(--mono); font-size: 0.82rem; padding: 0.7rem 0.9rem;
     outline: none; transition: border-color 0.15s, box-shadow 0.15s;
@@ -113,10 +113,16 @@
   .sv { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 0.6rem; transition: border-color 0.15s; }
   .sv:hover { border-color: var(--border2); }
   .sv-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .sv-left { display: flex; align-items: center; gap: 8px; }
   .sv-num { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); }
   .sv-txt { font-family: var(--mono); font-size: 0.78rem; line-height: 1.7; color: var(--text); word-break: break-word; }
   .op { color: var(--accent); font-weight: 700; }
   .qt { color: var(--accent2); }
+
+  .char-count { font-size: 0.65rem; font-family: var(--mono); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+  .char-ok   { background: var(--accent2-light); color: #15803d; border: 1px solid #86efac; }
+  .char-warn { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+  .char-over { background: var(--red-light); color: var(--red); border: 1px solid #fca5a5; }
 
   .scope-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.2rem; padding: 0.6rem 0.9rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); }
   .sc-lbl { font-size: 0.68rem; color: var(--text3); font-family: var(--mono); white-space: nowrap; }
@@ -134,7 +140,6 @@
   .res-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .res-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
   .res-skills { font-size: 0.72rem; color: var(--text2); font-family: var(--mono); }
-
   .note { font-size: 0.72rem; color: var(--text3); margin-top: 5px; line-height: 1.5; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -214,17 +219,20 @@ const ST = { locs: [], comps: [] };
 window._jd = {};
 window._filters = {};
 
-/* Level definitions — 5 levels */
+/* FIX 1: Store all search strings by key — avoids onclick string embedding which breaks on special chars */
+const SEARCH_STORE = {};
+
+/* Level definitions — L1 Very Broad to L5 Very Narrow */
 const LEVEL_META = [
-  { level:1, label:'Very Broad',   description:'Maximum reach — cross-industry, alternate titles, transferable skills' },
-  { level:2, label:'Broad',        description:'Wider skills, cross-functional and adjacent roles' },
-  { level:3, label:'Moderate',     description:'Primary skills with synonyms, related job titles included' },
-  { level:4, label:'Narrow',       description:'Core skills + slight location flexibility, synonyms allowed' },
-  { level:5, label:'Very Narrow',  description:'Exact title + exact skills + experience band + location' }
+  { level:1, label:'Very Broad',  description:'Maximum reach — cross-industry, alternate titles, transferable skills' },
+  { level:2, label:'Broad',       description:'Wider skills, cross-functional and adjacent roles' },
+  { level:3, label:'Moderate',    description:'Primary skills with synonyms, related job titles included' },
+  { level:4, label:'Narrow',      description:'Core skills + slight location flexibility, synonyms allowed' },
+  { level:5, label:'Very Narrow', description:'Exact title + exact skills + experience band + location' }
 ];
 
-/* Cache: level number → array of boolean strings (set after first fetch) */
 const LEVEL_CACHE = {};
+const NAUKRI_CHAR_LIMIT = 500;
 
 window.addEventListener('load', () => {
   addTag('locI','locT','locs','tag-blue');
@@ -257,7 +265,39 @@ function fillF(id, val) {
   el.value = val; el.classList.add('good');
 }
 
-/* ── FETCH JD ──────────────────────────────────────────────── */
+/* FIX 2: Copy using SEARCH_STORE key, with execCommand fallback for HTTP contexts */
+function cpKey(storeKey, btnId) {
+  const txt = SEARCH_STORE[storeKey];
+  if (!txt) return;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(txt).then(() => flashCopy(btnId)).catch(() => fallbackCopy(txt, btnId));
+  } else {
+    fallbackCopy(txt, btnId);
+  }
+}
+function fallbackCopy(txt, btnId) {
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); flashCopy(btnId); } catch(e) {}
+  document.body.removeChild(ta);
+}
+function flashCopy(btnId) {
+  const b = document.getElementById(btnId); if(!b) return;
+  b.textContent='Copied!'; b.classList.add('copied');
+  setTimeout(() => { b.textContent='Copy'; b.classList.remove('copied'); }, 2000);
+}
+
+/* FIX 3: Character counter badge — green under 420, amber 420-500, red over 500 */
+function charBadge(len) {
+  const cls = len > NAUKRI_CHAR_LIMIT ? 'char-over' : len > 420 ? 'char-warn' : 'char-ok';
+  const label = len > NAUKRI_CHAR_LIMIT ? `⚠ ${len}/500` : `${len}/500`;
+  return `<span class="char-count ${cls}">${label}</span>`;
+}
+
+/* ── FETCH JD ── */
 async function doFetch() {
   const url = document.getElementById('jobUrl').value.trim();
   if (!url) { showSt('fetchSt','Please enter a GetWork URL.','s-err',false); return; }
@@ -326,15 +366,15 @@ async function doFetch() {
   }
 }
 
-/* ── GENERATE — metadata + competitors only (no booleans yet) ── */
+/* ── GENERATE — metadata + competitors only ── */
 async function doGen() {
   const jd = window._jd;
   if (!jd.jobTitle && !document.getElementById('coName').value) {
     showSt('genSt','Please fetch a job URL first.','s-err',false); return;
   }
 
-  /* Clear level cache on every new Generate */
   Object.keys(LEVEL_CACHE).forEach(k => delete LEVEL_CACHE[k]);
+  Object.keys(SEARCH_STORE).forEach(k => delete SEARCH_STORE[k]);
 
   document.getElementById('genBtn').disabled = true;
   showSt('genSt','Generating competitor map and job metadata...','s-info',true);
@@ -366,10 +406,10 @@ Locations: ${f.locs.join(', ')||'Any'}
 Additional Competitors: ${f.comps.join(', ')||'None'}
 JD: ${jd.jobDescription||'Use skills and title above'}
 
-Return ONLY valid JSON — no boolean search strings needed here:
+Return ONLY valid JSON:
 {"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
 
-Rules: AND OR NOT uppercase in boolean strings. Competitor searches: ("Company") AND (skills). Include 8 competitors minimum — mix same industry and adjacent industries. No apostrophes in JSON string values. ONLY JSON.`;
+Boolean rules: Use ONLY AND, OR, NOT operators (uppercase). No other operators. Competitor format: ("Company Name") AND ("skill1" OR "skill2"). Each string under 500 characters. 8 competitors minimum. No apostrophes in JSON values. ONLY JSON.`;
 
   try {
     const res = await fetch('/api/claude', {
@@ -400,9 +440,9 @@ Rules: AND OR NOT uppercase in boolean strings. Competitor searches: ("Company")
   }
 }
 
-/* ── FETCH BOOLEAN STRINGS FOR A SINGLE LEVEL (on-demand) ── */
+/* ── FETCH LEVEL ON DEMAND ── */
 async function fetchLevel(n) {
-  if (LEVEL_CACHE[n]) return; /* already fetched, skip */
+  if (LEVEL_CACHE[n]) return;
   const jd = window._jd;
   const f = window._filters;
   const meta = LEVEL_META[n-1];
@@ -426,15 +466,17 @@ Locations: ${(f.locs||[]).join(', ')||'Any'}
 Company: ${f.co||''}
 Industry: ${f.ind||''}
 
-Rules:
-- AND OR NOT must be uppercase
-- Use quotes around multi-word phrases: "machine learning"
-- L4 and L5: include experience years explicitly, e.g. AND ("3 years" OR "4 years" OR "5 years")
-- L1 and L2: use broader synonyms, drop strict location, include adjacent titles
-- Each variation must be meaningfully different from the others
-- Return ONLY valid JSON, no markdown, no explanation
+STRICT RULES:
+- Use ONLY these operators: AND, OR, NOT — all uppercase. No other operators allowed.
+- Parentheses for grouping: ("java" OR "spring boot")
+- Double quotes around multi-word phrases: "machine learning"
+- L4 and L5 (Narrow/Very Narrow): include experience years e.g. AND ("3 years" OR "4 years" OR "5 years")
+- L1 and L2 (Very Broad/Broad): use synonyms, drop strict location, include adjacent titles
+- Each variation must be meaningfully different
+- CRITICAL: Each string MUST be under 500 characters. Trim if needed.
+- Return ONLY valid JSON, no markdown
 
-{"searches":["full boolean string variation 1","full boolean string variation 2","full boolean string variation 3"]}`;
+{"searches":["string1 under 500 chars","string2 under 500 chars","string3 under 500 chars"]}`;
 
   try {
     const res = await fetch('/api/claude', {
@@ -449,45 +491,62 @@ Rules:
     const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
     if (s < 0 || e <= s) throw new Error('Invalid response format.');
     const result = JSON.parse(txt.slice(s, e+1));
-    LEVEL_CACHE[n] = result.searches;
-    renderLevelPanel(n, result.searches, meta.description);
+
+    /* Hard trim at 500 chars if AI still exceeds limit */
+    const trimmed = (result.searches||[]).map(str => {
+      if (str.length <= NAUKRI_CHAR_LIMIT) return str;
+      const cut = str.lastIndexOf(' ', NAUKRI_CHAR_LIMIT);
+      return str.slice(0, cut > 0 ? cut : NAUKRI_CHAR_LIMIT);
+    });
+
+    LEVEL_CACHE[n] = trimmed;
+    renderLevelPanel(n, trimmed, meta.description);
   } catch(err) {
     if (panel) panel.innerHTML =
       `<div class="status s-err"><span>${err.message} — Click the tab again to retry.</span></div>`;
-    delete LEVEL_CACHE[n]; /* allow retry */
+    delete LEVEL_CACHE[n];
   }
 }
 
-/* ── RENDER A LEVEL PANEL AFTER FETCH ── */
+/* ── RENDER LEVEL PANEL ── */
 function renderLevelPanel(n, searches, description) {
   const panel = document.getElementById(`lp${n}`);
   if (!panel) return;
+
   const naukriNote = `<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:0.6rem 0.9rem;margin-bottom:0.8rem;">
     <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px;">How to use on Naukri.com</div>
     <div style="font-size:0.72rem;color:#78350f;font-family:var(--mono);line-height:1.8;">
-      1. Copy string below &nbsp;→&nbsp; 2. Paste into Naukri search box &nbsp;→&nbsp; 3. Apply Experience / Location / Salary filters on the left panel
+      1. Copy string below &nbsp;→&nbsp; 2. Paste into Naukri search box &nbsp;→&nbsp; 3. Apply Experience / Location / Salary filters on left panel
     </div>
   </div>`;
-  panel.innerHTML = `<div class="lvl-desc">${description}</div>${naukriNote}` +
-    (searches||[]).map((s,i) => `<div class="sv">
+
+  const cards = (searches||[]).map((s, i) => {
+    const key = `lv${n}_${i}`;
+    SEARCH_STORE[key] = s;
+    return `<div class="sv">
       <div class="sv-hdr">
-        <span class="sv-num">Variation ${i+1}</span>
-        <button class="btn-copy" id="bc${n}_${i}" onclick="cp(${JSON.stringify(s)},'bc${n}_${i}')">Copy</button>
+        <div class="sv-left">
+          <span class="sv-num">Variation ${i+1}</span>
+          ${charBadge(s.length)}
+        </div>
+        <button class="btn-copy" id="bc_${key}" onclick="cpKey('${key}','bc_${key}')">Copy</button>
       </div>
       <div class="sv-txt">${hl(s)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `<div class="lvl-desc">${description}</div>${naukriNote}${cards}`;
 }
 
 /* ── SWITCH LEVEL TAB ── */
 function swLvl(n) {
-  const tot = 5;
-  for(let i=1;i<=tot;i++){
+  for(let i=1;i<=5;i++){
     document.getElementById(`lt${i}`)?.classList.toggle('on', i===n);
     document.getElementById(`lp${i}`)?.classList.toggle('on', i===n);
   }
   const fill = document.getElementById('scFill');
-  if(fill) fill.style.width = Math.round((n/tot)*100)+'%';
-  if(!LEVEL_CACHE[n]) fetchLevel(n); /* fetch only on first click */
+  if(fill) fill.style.width = Math.round((n/5)*100)+'%';
+  if(!LEVEL_CACHE[n]) fetchLevel(n);
 }
 
 /* ── SWITCH SECTION TAB ── */
@@ -496,18 +555,11 @@ function swSec(n) {
   document.querySelectorAll('.sec-panel').forEach((p,i) => p.classList.toggle('on', i===n));
 }
 
-/* ── HELPERS ── */
+/* ── HIGHLIGHT OPERATORS ── */
 function hl(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\b(AND|OR|NOT)\b/g,'<span class="op">$1</span>')
     .replace(/"([^"]+)"/g,'<span class="qt">"$1"</span>');
-}
-function cp(txt, id) {
-  navigator.clipboard.writeText(txt).then(() => {
-    const b = document.getElementById(id); if(!b) return;
-    b.textContent='Copied!'; b.classList.add('copied');
-    setTimeout(() => { b.textContent='Copy'; b.classList.remove('copied'); }, 2000);
-  });
 }
 
 /* ── DRAW RESULTS SHELL ── */
@@ -527,36 +579,43 @@ function drawResults(r, f) {
     `<button class="lvl-tab ${l.level===1?'on':''}" id="lt${l.level}" onclick="swLvl(${l.level})">L${l.level} · ${l.label}</button>`
   ).join('');
 
-  /* All 5 panels — content is empty initially, filled by fetchLevel() */
   const bPanels = LEVEL_META.map(l =>
     `<div class="lvl-panel ${l.level===1?'on':''}" id="lp${l.level}"></div>`
   ).join('');
 
   /* Competitor section */
   const compsByIndustry = {};
-  (r.competitorSearches||[]).forEach(c => {
+  (r.competitorSearches||[]).forEach((c, ci) => {
     const ind = c.industry || 'Other';
     if(!compsByIndustry[ind]) compsByIndustry[ind] = [];
-    compsByIndustry[ind].push(c);
+    compsByIndustry[ind].push({...c, _ci: ci});
   });
+
   const compH = Object.entries(compsByIndustry).map(([industry, comps]) => `
     <div style="margin-bottom:1.2rem;">
       <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);background:var(--amber-light);border:1px solid #fcd34d;border-radius:4px;padding:3px 10px;display:inline-block;margin-bottom:0.7rem;">${industry}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
-        ${comps.map((c,ci) => `<div class="comp-card">
-          <div class="comp-name">${c.company}</div>
-          <div class="comp-why">${c.rationale||''}</div>
-          ${(c.searches||[]).map((s,si) => `<div style="margin-bottom:5px;">
-            <div style="display:flex;gap:5px;align-items:flex-start;">
-              <div class="comp-search">${hl(s)}</div>
-              <button class="btn-copy" id="cc${ci}_${si}" onclick="cp(${JSON.stringify(s)},'cc${ci}_${si}')" style="flex-shrink:0;margin-top:2px;">Copy</button>
-            </div>
-          </div>`).join('')}
-        </div>`).join('')}
+        ${comps.map(c => {
+          const ci = c._ci;
+          return `<div class="comp-card">
+            <div class="comp-name">${c.company}</div>
+            <div class="comp-why">${c.rationale||''}</div>
+            ${(c.searches||[]).map((s,si) => {
+              const key = `comp_${ci}_${si}`;
+              SEARCH_STORE[key] = s;
+              return `<div style="margin-bottom:5px;">
+                <div style="display:flex;gap:5px;align-items:flex-start;">
+                  <div class="comp-search">${hl(s)}</div>
+                  <button class="btn-copy" id="bc_${key}" onclick="cpKey('${key}','bc_${key}')" style="flex-shrink:0;margin-top:2px;">Copy</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`;
+        }).join('')}
       </div>
     </div>`).join('');
 
-  /* Manpower mapping section */
+  /* Manpower mapping */
   const mm = r.manpowerMapping||{};
   const mmH = `
     <div style="margin-bottom:1rem;">
@@ -572,13 +631,17 @@ function drawResults(r, f) {
       <div class="tags">${(mm.targetIndustries||[]).map(x=>`<span class="tag tag-amber">${x}</span>`).join('')}</div>
     </div>
     <div class="card-title">Cross-industry searches</div>
-    ${(mm.crossIndustrySearches||[]).map((s,i) => `<div class="sv">
-      <div class="sv-hdr">
-        <span class="sv-num">Search ${i+1}</span>
-        <button class="btn-copy" id="mc${i}" onclick="cp(${JSON.stringify(s)},'mc${i}')">Copy</button>
-      </div>
-      <div class="sv-txt">${hl(s)}</div>
-    </div>`).join('')}`;
+    ${(mm.crossIndustrySearches||[]).map((s,i) => {
+      const key = `mm_${i}`;
+      SEARCH_STORE[key] = s;
+      return `<div class="sv">
+        <div class="sv-hdr">
+          <div class="sv-left"><span class="sv-num">Search ${i+1}</span>${charBadge(s.length)}</div>
+          <button class="btn-copy" id="bc_${key}" onclick="cpKey('${key}','bc_${key}')">Copy</button>
+        </div>
+        <div class="sv-txt">${hl(s)}</div>
+      </div>`;
+    }).join('')}`;
 
   document.getElementById('res').innerHTML = `
     <div class="res-header">
@@ -607,7 +670,6 @@ function drawResults(r, f) {
   rc.style.display = 'block';
   rc.scrollIntoView({ behavior:'smooth', block:'start' });
 
-  /* Auto-fetch L1 since it is the default visible tab */
   fetchLevel(1);
 }
 </script>
