@@ -1,6 +1,6 @@
 /* ──────────────────────────────────────────────────────────────
    GetWork Recruiter Support Hub — backend server
-   - Serves the static pages from /public
+   - Serves the static pages from the repo root (same folder as server.js)
    - /api/claude   : proxies requests to the Anthropic Messages API
    - /api/fetch-jd : fetches a GetWork JD page server-side (avoids CORS)
    Node 18+ required (uses built-in fetch).
@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json({ limit: '4mb' }));
 
 /* Serve all HTML files placed in the /public folder */
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));  // serves index.html and the other pages from the repo root
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
