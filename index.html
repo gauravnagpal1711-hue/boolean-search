@@ -166,7 +166,7 @@
     <div id="extBox" style="display:none;"></div>
   </div>
 
-  <div class="grid-3">
+  <div class="grid-2">
     <div class="card">
       <div class="card-title"><span class="dot dot-green"></span>Experience (yrs)</div>
       <div class="range-row">
@@ -183,24 +183,25 @@
         <input type="number" id="ctcMax" placeholder="Max" min="0" />
       </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="dot dot-amber"></span>Company & Industry</div>
-      <input type="text" id="coName" placeholder="Company name" style="margin-bottom:6px" />
-      <input type="text" id="indName" placeholder="Industry" />
-    </div>
   </div>
 
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title"><span class="dot dot-amber"></span>Locations</div>
-      <input type="text" id="locI" placeholder="City + Enter" />
-      <div class="tags" id="locT"></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="dot dot-amber"></span>Competitor Companies</div>
-      <input type="text" id="compI" placeholder="Company + Enter" />
-      <div class="tags" id="compT"></div>
-    </div>
+  <div class="card">
+    <div class="card-title"><span class="dot dot-amber"></span>Company & Industry</div>
+    <input type="text" id="coName" placeholder="Company name" style="margin-bottom:6px" />
+    <input type="text" id="indName" placeholder="Industry" />
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot dot-amber"></span>Competitor Companies</div>
+    <input type="text" id="compI" placeholder="Company + Enter to add manually" />
+    <div class="tags" id="compT"></div>
+    <p class="note" style="margin-top:8px;">Auto-populated from JD fetch. Add more manually if needed.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot dot-green"></span>Role Synonyms (Auto-populated)</div>
+    <div class="tags" id="roleSynT"></div>
+    <p class="note">Minimum 10 role synonyms auto-populated from JD analysis. Edit or add more above if needed.</p>
   </div>
 
   <div class="card">
@@ -215,7 +216,7 @@
 </div>
 
 <script>
-const ST = { locs: [], comps: [] };
+const ST = { comps: [], roleSyns: [] };
 window._jd = {};
 window._filters = {};
 
@@ -235,7 +236,6 @@ const LEVEL_CACHE = {};
 const NAUKRI_CHAR_LIMIT = 500;
 
 window.addEventListener('load', () => {
-  addTag('locI','locT','locs','tag-blue');
   addTag('compI','compT','comps','tag-amber');
 });
 
@@ -342,8 +342,20 @@ async function doFetch() {
     if (j.experienceMax) fillF('expMax', j.experienceMax);
     if (j.ctcMin) fillF('ctcMin', j.ctcMin);
     if (j.ctcMax) fillF('ctcMax', j.ctcMax);
-    (j.locations||[]).forEach(l => { if(l&&!ST.locs.includes(l)) ST.locs.push(l); });
-    drawTags('locT','locs','tag-blue');
+
+    /* ── CHANGE 1: Auto-populate competitors from JD ── */
+    const competitorsList = await extractCompetitors(j.jobTitle, j.companyName, j.industry, j.jobDescription);
+    if (competitorsList && competitorsList.length > 0) {
+      ST.comps = competitorsList;
+      drawTags('compT','comps','tag-amber');
+    }
+
+    /* ── CHANGE 2: Auto-populate role synonyms (minimum 10) ── */
+    const roleSynonyms = await extractRoleSynonyms(j.jobTitle, j.keySkills, j.jobDescription);
+    if (roleSynonyms && roleSynonyms.length > 0) {
+      ST.roleSyns = roleSynonyms.slice(0, 20); // Store up to 20 for later use
+      drawRoleSynonyms();
+    }
 
     const box = document.getElementById('extBox');
     box.style.display = 'block';
@@ -354,8 +366,8 @@ async function doFetch() {
         ${j.industry?`<span class="chip chip-g">${j.industry}</span>`:''}
         ${(j.experienceMin||j.experienceMax)?`<span class="chip chip-b">Exp: ${j.experienceMin||0}–${j.experienceMax||'?'} yrs</span>`:''}
         ${(j.ctcMin||j.ctcMax)?`<span class="chip chip-b">CTC: ₹${j.ctcMin||0}–${j.ctcMax||'?'} LPA</span>`:''}
-        ${(j.locations||[]).map(l=>`<span class="chip chip-a">${l}</span>`).join('')}
-        ${(j.keySkills||[]).length?`<span class="chip chip-g">Skills: ${j.keySkills.slice(0,5).join(', ')}</span>`:''}
+        ${(j.keySkills||[]).map(l=>`<span class="chip chip-g">${l}</span>`).join('')}
+        ${competitorsList && competitorsList.length?`<span class="chip chip-a">${competitorsList.length} Competitors</span>`:''}
       </div>
     </div>`;
     showSt('fetchSt','All details extracted. Click Generate.','s-ok',false);
@@ -364,6 +376,74 @@ async function doFetch() {
   } finally {
     document.getElementById('fetchBtn').disabled = false;
   }
+}
+
+/* ── EXTRACT COMPETITORS FROM JD ── */
+async function extractCompetitors(jobTitle, company, industry, jdText) {
+  try {
+    const prompt = `Extract 4-6 competitor companies from this job description for a ${jobTitle} role at ${company} in ${industry} industry.
+
+Job Description: ${(jdText||'').slice(0, 1500)}
+
+Return ONLY a JSON array of competitor company names (no quotes or special formatting around names):
+["Company1", "Company2", "Company3", "Company4", "Company5"]
+
+List major competitors in the SAME industry as ${company}. Return ONLY the JSON array, no other text.`;
+
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 300, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error('Could not extract competitors');
+    const txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const s = txt.indexOf('['), e = txt.lastIndexOf(']');
+    if (s < 0 || e <= s) return [];
+    return JSON.parse(txt.slice(s, e+1));
+  } catch(err) {
+    console.warn('Competitor extraction failed:', err.message);
+    return [];
+  }
+}
+
+/* ── EXTRACT ROLE SYNONYMS (MINIMUM 10) ── */
+async function extractRoleSynonyms(jobTitle, skills, jdText) {
+  try {
+    const prompt = `Generate minimum 10 alternate job titles / role synonyms for this position: "${jobTitle}"
+
+Skills: ${(skills||[]).join(', ')}
+
+Job Description excerpt: ${(jdText||'').slice(0, 800)}
+
+Return ONLY a JSON array of 10-15 role synonyms (similar titles, adjacent roles, alternate names):
+["Role1", "Role2", "Role3", ...]
+
+Include direct synonyms, adjacent titles, and cross-industry equivalents. Return ONLY the JSON array.`;
+
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error('Could not extract role synonyms');
+    const txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const s = txt.indexOf('['), e = txt.lastIndexOf(']');
+    if (s < 0 || e <= s) return [];
+    const syns = JSON.parse(txt.slice(s, e+1));
+    return syns.length >= 10 ? syns : syns; // Return even if less than 10, but try for 10+
+  } catch(err) {
+    console.warn('Role synonym extraction failed:', err.message);
+    return [];
+  }
+}
+
+/* ── DRAW ROLE SYNONYMS ── */
+function drawRoleSynonyms() {
+  document.getElementById('roleSynT').innerHTML = ST.roleSyns.map((role, i) =>
+    `<span class="tag tag-green">${role}</span>`
+  ).join('');
 }
 
 /* ── GENERATE — metadata + competitors only ── */
@@ -386,8 +466,8 @@ async function doGen() {
     ctcMax: document.getElementById('ctcMax').value || jd.ctcMax,
     co: document.getElementById('coName').value || jd.companyName,
     ind: document.getElementById('indName').value || jd.industry,
-    locs: ST.locs.length ? ST.locs : (jd.locations||[]),
-    comps: [...ST.comps]
+    comps: [...ST.comps],
+    roleSyns: [...ST.roleSyns]
   };
   window._filters = f;
 
@@ -402,14 +482,14 @@ Industry: ${f.ind}
 Skills: ${(jd.keySkills||[]).join(', ')}
 Experience: ${f.expMin||0}–${f.expMax||'?'} years
 CTC: ${ctcMinVal||0}–${ctcMaxVal||'?'} LPA
-Locations: ${f.locs.join(', ')||'Any'}
-Additional Competitors: ${f.comps.join(', ')||'None'}
+Role Synonyms: ${f.roleSyns.join(', ')||'None'}
+Competitor Companies: ${f.comps.join(', ')||'None'}
 JD: ${jd.jobDescription||'Use skills and title above'}
 
 Return ONLY valid JSON:
-{"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4"],"crossIndustrySearches":["B1","B2","B3"]}}
+{"jobTitle":"","extractedSkills":["s1","s2","s3","s4","s5"],"similarRoles":["r1","r2","r3","r4"],"competitorSearches":[{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]},{"company":"Name","industry":"Industry name","rationale":"Why relevant","searches":["B1","B2"]}],"manpowerMapping":{"targetIndustries":["i1","i2","i3","i4"],"roleSynonyms":["s1","s2","s3","s4","s5"],"crossIndustrySearches":["B1","B2","B3"]}}
 
-Boolean rules: Use ONLY AND, OR, NOT operators (uppercase). No other operators. Competitor format: ("Company Name") AND ("skill1" OR "skill2"). Each string under 500 characters. 8 competitors minimum. No apostrophes in JSON values. ONLY JSON.`;
+Boolean rules: Use ONLY AND, OR, NOT operators (uppercase). No other operators. Competitor format: ("Company Name") AND ("skill1" OR "skill2"). Each string under 500 characters. No apostrophes in JSON values. ONLY JSON.`;
 
   try {
     const res = await fetch('/api/claude', {
@@ -462,7 +542,6 @@ Job Title: ${jd.jobTitle}
 Skills: ${(jd.keySkills||[]).join(', ')}
 Experience: ${f.expMin||0}–${f.expMax||'?'} years
 CTC: ${ctcMinVal||0}–${ctcMaxVal||'?'} LPA
-Locations: ${(f.locs||[]).join(', ')||'Any'}
 Company: ${f.co||''}
 Industry: ${f.ind||''}
 
@@ -516,7 +595,7 @@ function renderLevelPanel(n, searches, description) {
   const naukriNote = `<div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:0.6rem 0.9rem;margin-bottom:0.8rem;">
     <div style="font-size:0.75rem;font-weight:700;color:#92400e;margin-bottom:4px;">How to use on Naukri.com</div>
     <div style="font-size:0.72rem;color:#78350f;font-family:var(--mono);line-height:1.8;">
-      1. Copy string below &nbsp;→&nbsp; 2. Paste into Naukri search box &nbsp;→&nbsp; 3. Apply Experience / Location / Salary filters on left panel
+      1. Copy string below &nbsp;→&nbsp; 2. Paste into Naukri search box &nbsp;→&nbsp; 3. Apply Experience / Salary filters on left panel
     </div>
   </div>`;
 
@@ -571,8 +650,7 @@ function drawResults(r, f) {
     f.co?`<span class="chip chip-a">${f.co}</span>`:'',
     f.ind?`<span class="chip chip-g">${f.ind}</span>`:'',
     (f.expMin||f.expMax)?`<span class="chip chip-b">Exp: ${f.expMin||0}–${f.expMax||'?'} yrs</span>`:'',
-    (f.ctcMin||f.ctcMax)?`<span class="chip chip-g">CTC: ₹${f.ctcMin||0}–${f.ctcMax||'?'} LPA</span>`:'',
-    ...(f.locs||[]).map(l=>`<span class="chip chip-a">${l}</span>`)
+    (f.ctcMin||f.ctcMax)?`<span class="chip chip-g">CTC: ₹${f.ctcMin||0}–${f.ctcMax||'?'} LPA</span>`:''
   ].filter(Boolean).join('');
 
   const bTabs = LEVEL_META.map(l =>
